@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul>
+    <li>Login: {{ current_user.login}}</li>
+    <li>Role: {{ role_name }}</li>
+</ul>
+<p><a href="{{'/logout'}}">Logout</a></p>
+{% include "index.html" %}
+{% endblock %}

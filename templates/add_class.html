@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Добавить занятие</h1>
+<form method="POST" action="/add_class">
+    <label for="start">Начало</label>
+    <input type="time" id="start" name="start" required><br><br>
+
+    <label for="end">Конец</label>
+    <input type="time" id="end" name="end" required><br><br>
+
+    <label for="class_number">Номер пары</label>
+    <input type="number" min="1" id="class_number" name="class_number" required><br><br>
+
+    <label for="weekday">День недели</label>
+    <input type="number" min="1" max="7" id="weekday" name="weekday" required><br><br>
+
+    <label for="week_parity">Четность недели</label>
+    <input type="number" min="1" max="2" id="week_parity" name="week_parity" required><br><br>
+
+    <label for="subject">Предмет</label>
+    <select id="subject" name="subject" required>
+        {% for item in subjects %}
+            <option value={{item['id']}}>{{item['name']}}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="professor">Преподаватель</label>
+    <select id="professor" name="professor" required>
+        {% for item in professors %}
+            <option value={{item['id']}}>{{item['name']}}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="classroom">Кабинет</label>
+    <select id="classroom" name="classroom" required>
+        {% for item in classrooms %}
+            <option value={{item['id']}}>{{item['name']}}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="group">Группа</label>
+    <select id="group" name="group" required>
+        {% for item in groups %}
+            <option value={{item['id']}}>{{item['name']}}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <input type="submit" value="Добавить класс">
+</form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+{% for item in classes%}
+<div class="col-md6 border rounded">
+    <h2>{{item.subject}}</h2>
+        <div>{{item.group}}</div>
+        <div>{{item.professor}}</div>
+        <div>{{item.classroom}}</div>
+        <div>___________________________________________________</div>
+        <div>{{item.start}}-{{item.end}}</div>
+        <div>{{item.weekday}}. {{item.class_number}} пара.</div>
+        <div>Четность недели: {{item.week_parity}}</div>
+
+        {% if is_operator %}
+        <form action="{{  url_for('delete_class', class_id=item.id)  }}" method="post">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+        {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

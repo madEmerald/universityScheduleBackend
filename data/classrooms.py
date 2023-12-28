@@ -4,5 +4,5 @@ from data.db_session import SqlAlchemyBase
 
 class Classroom(SqlAlchemyBase):
     __tablename__ = 'classrooms'
-    classroom_id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
