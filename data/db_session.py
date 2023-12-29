@@ -2,6 +2,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.orm import Session, declarative_base
 
+
 def global_init(server_name, password, db_name):
     global __factory
 

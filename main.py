@@ -1,9 +1,11 @@
 import os
+import csv
 import subprocess
-from datetime import datetime
+from io import StringIO
 from functools import wraps
+from datetime import datetime
 
-from flask import Flask, redirect, render_template, flash, jsonify, request
+from flask import Flask, redirect, render_template, flash, jsonify, request, make_response
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from requests import get
 import yadisk
@@ -76,17 +78,17 @@ def profile():
     if role_name == 'professor':
         professor_id = session.query(data.professors.Professor) \
             .filter(data.professors.Professor.user_id == current_user.id).first().id
-        classes = get(f"http://127.0.0.1:5000/classes/{professor_id}/0/0").json()
+        classes = get(f"http://127.0.0.1:5000/classes/{professor_id}/0/0/0").json()
     if role_name == 'student':
         group_id = session.query(data.students.Student) \
             .filter(data.students.Student.user_id == current_user.id).first().group_id
-        classes = get(f"http://127.0.0.1:5000/classes/0/0/{group_id}").json()
+        classes = get(f"http://127.0.0.1:5000/classes/0/0/{group_id}/0").json()
     session.close()
     return render_template('profile.html', title='Профиль', role_name=role_name, classes=classes)
 
 
-@app.route('/classes/<int:professor_id>/<int:classroom_id>/<int:group_id>', methods=['GET'])
-def get_classes(professor_id=0, classroom_id=0, group_id=0):
+@app.route('/classes/<int:professor_id>/<int:classroom_id>/<int:group_id>/<int:to_csv>', methods=['GET'])
+def get_classes(professor_id=0, classroom_id=0, group_id=0, to_csv=0):
     session = db_session.create_session()
     query = session.query(data.classes.Class).order_by(data.classes.Class.weekday, data.classes.Class.class_number,
                                                        data.classes.Class.week_parity, data.classes.Class.group_id)
@@ -136,12 +138,24 @@ def get_classes(professor_id=0, classroom_id=0, group_id=0):
 
     session.close()
 
+    if to_csv:
+        csv_data = StringIO()
+        csv_columns = list(class_list[0].keys())
+        writer = csv.DictWriter(csv_data, fieldnames=csv_columns)
+        writer.writeheader()
+        writer.writerows(class_list)
+        output = make_response(csv_data.getvalue())
+        output.headers["Content-Disposition"] = "attachment; filename=export.csv"
+        output.headers["Content-type"] = "text/csv"
+
+        return output
+
     return jsonify(class_list)
 
 
 @app.route("/")
-def index():
-    classes = get("http://127.0.0.1:5000/classes/0/0/0")
+def schedule():
+    classes = get("http://127.0.0.1:5000/classes/0/0/0/0")
     return render_template("schedule.html", classes=classes.json(), title='Расписание',
                            is_operator=current_user.is_authenticated and current_user.role_id == 1)
 
